@@ -76,7 +76,7 @@ def evaluate_model(
             "dtype": "float16",
         }
         if vllm:
-            model_args["gpu_memory_utilization"] = 0.8
+            model_args["gpu_memory_utilization"] = 0.3
             model_args["tensor_parallel_size"] = 1
             model_args["batch_size"] = "auto"
             model_args["max_model_len"] = 4096
