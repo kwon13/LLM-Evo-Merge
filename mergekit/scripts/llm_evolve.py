@@ -260,7 +260,7 @@ def main(
                 {
                     "best_score": es.prev_best_cost,
                     "best_genome": wandb.Table(data=pandas.DataFrame(best_params)),
-                    "thought": es.thought,
+                    "thought": str(es.thought),
                     "evaluations": evaluations,
                 },
                 commit=True,
