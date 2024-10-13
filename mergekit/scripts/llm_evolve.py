@@ -56,7 +56,7 @@ from mergekit.options import MergeOptions
 
 @click.command("mergekit-llm_evolve")
 @click.argument("genome-config-path", type=str)
-@click.option("--max-fevals", type=int, default=10)
+@click.option("--max-generation", type=int, default=10)
 @click.option("--vllm/--no-vllm", is_flag=True, default=False, help="Use vLLM")
 @click.option(
     "--strategy",
@@ -124,7 +124,7 @@ from mergekit.options import MergeOptions
 )
 def main(
     genome_config_path: str,
-    max_fevals: int,
+    max_generation: int,
     vllm: bool,
     strategy: str,
     in_memory: bool,
@@ -154,7 +154,7 @@ def main(
     )
 
     check_for_naughty_config(config, allow=allow_benchmark_tasks)
-
+    
     if use_wandb:
         if not wandb:
             raise RuntimeError("wandb is not installed")
@@ -260,7 +260,7 @@ def main(
                 {
                     "best_score": es.prev_best_cost,
                     "best_genome": wandb.Table(data=pandas.DataFrame(best_params)),
-                    "thought": str(es.thought),
+                    "thought": wandb.Table(data=pandas.DataFrame({'text':[es.thought]})),
                     "evaluations": evaluations,
                 },
                 commit=True,
@@ -332,7 +332,7 @@ def main(
             population_size=population_size,
         )
         x_t, fscore_list = parallel_evaluate(x_t)
-        for idx in range(max_fevals):
+        for idx in range(max_generation):
             x_t = llm_evo.mutate(x_t, fscore_list, sigma_low=sigma_low, 
                                 sigma_high=sigma_high, max_retries=max_retries)
             x_t, fscore_list = parallel_evaluate(x_t)
