@@ -323,16 +323,15 @@ class LLMEvolutionStrategy:
     def mutate(self, pre_gen: np.array, fit_scores: list[float], max_retries: int = 3, sigma_low:float=0.05, sigma_high:float=0.2) -> np.array:
         self.generation += 1
         fitness_improved = max(fit_scores) > self.prev_best_cost
-        if fitness_improved:
-            self.prev_best_cost = max(fit_scores)
             
         # Scale and discretize pre_gen to integer-based format for LLM compatibility
+        pre_gen_list=[]
         for idx, (gen, score) in enumerate(zip(pre_gen, fit_scores)):
             if score > self.prev_best_cost:
                 self.prev_best_cost = score
                 self.prev_best_genome = gen
-                gen = (gen * 100).astype(int).reshape(self.population_size, *self.dimensions).tolist()
-            pre_gen[idx] = {"fitness_score": score, f"genome_{idx+1}": gen}
+            gen = (gen * 100).astype(int).reshape(self.population_size, *self.dimensions).tolist()
+            pre_gen_list.append({"fitness_score": score, f"genome_{idx+1}": gen})
 
         user_prompt = self.user_prompt_template.substitute(
             generation=self.generation,

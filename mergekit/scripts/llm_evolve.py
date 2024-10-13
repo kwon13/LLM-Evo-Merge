@@ -331,9 +331,9 @@ def main(
             dimensions=dimensions,
             population_size=population_size,
         )
-        
+        x_t, fscore_list = parallel_evaluate(x_t)
         for idx in range(max_fevals):
-            x_t = llm_evo.mutate(*parallel_evaluate(x_t), sigma_low=sigma_low, 
+            x_t = llm_evo.mutate(x_t, fscore_list, sigma_low=sigma_low, 
                                 sigma_high=sigma_high, max_retries=max_retries)
             x_t, fscore_list = parallel_evaluate(x_t)
             max_index, xbest_cost = max(enumerate(fscore_list), key=lambda x: x[1])
