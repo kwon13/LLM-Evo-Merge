@@ -250,17 +250,19 @@ def main(
     x_t = genome.initial_genotype(population_size).view(population_size, -1).numpy()
     xbest=x_t[0]
     xbest_cost = -np.inf
+    thought_log = []
 
     def progress_callback(es: LLMEvolutionStrategy, evaluations:int):
         nonlocal xbest, xbest_cost
 
         if use_wandb:
             best_params = genome.genotype_to_param_arrays(es.prev_best_genome)
+            thought_log.append(es.thought)
             run.log(
                 {
                     "best_score": es.prev_best_cost,
                     "best_genome": wandb.Table(data=pandas.DataFrame(best_params)),
-                    "thought": wandb.Table(data=pandas.DataFrame({'text':[es.thought]})),
+                    "thought": wandb.Table(data=pandas.DataFrame({'text':thought_log})),
                     "evaluations": evaluations,
                 },
                 commit=True,
