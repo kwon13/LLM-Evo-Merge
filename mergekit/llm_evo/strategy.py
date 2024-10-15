@@ -307,7 +307,7 @@ class SerialEvaluationStrategy(EvaluationStrategyBase):
 
 # LLMEvolutionStrategy
 class LLMEvolutionStrategy:
-    def __init__(self, api_key, model, system_prompt_template, user_prompt_template, dimensions, population_size):
+    def __init__(self, api_key, model, system_prompt_template, user_prompt_template, dimensions, population_size, top_k):
         self.client = OpenAI(api_key=api_key)
         self.model = model
         self.dimensions = dimensions  
@@ -319,6 +319,7 @@ class LLMEvolutionStrategy:
         self.prev_best_cost = -np.inf
         self.prev_best_genome = None
         self.generation = 0
+        self.top_k = top_k
         
     def mutate(self, pre_gen: np.array, fit_scores: list[float], max_retries: int = 3, sigma_low:float=0.05, sigma_high:float=0.2) -> np.array:
         self.generation += 1
@@ -332,11 +333,13 @@ class LLMEvolutionStrategy:
                 self.prev_best_genome = gen
             gen = (gen * 100).astype(int).reshape(*self.dimensions).tolist()
             pre_gen_list.append({"fitness_score": score, f"genome_{idx+1}": gen})
-
+            
+        pre_gen_list = sorted(pre_gen_list, key=lambda x: x['fitness_score'], reverse=True)[:self.top_k]
         user_prompt = self.user_prompt_template.substitute(
             generation=self.generation,
             prev_generation=pre_gen_list,
-            prev_best_cost=self.prev_best_cost
+            prev_best_cost=self.prev_best_cost,
+            top_k=self.top_k,
         )
         self.messages.append({"role": "user", "content": user_prompt})
 

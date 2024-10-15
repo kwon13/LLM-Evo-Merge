@@ -332,6 +332,7 @@ def main(
             user_prompt_template=user_prompt_template,
             dimensions=dimensions,
             population_size=population_size,
+            top_k=4
         )
         x_t, fscore_list = parallel_evaluate(x_t)
         for idx in range(max_generation):
