@@ -1,6 +1,6 @@
 # 🤖 LLM Evolutionary Merge
 
-🤗 [Model](https://huggingface.co/fiveflow/LLMEvoLLaMA-3.1-8B-v0.1) | 📂 [Github](https://github.com/kwon13/LLM-Evo-Merge) | ✍️ [Blog](작성중..)
+🤗 [Model](https://huggingface.co/fiveflow/LLMEvoLLaMA-3.1-8B-v0.1) | 📂 [Github](https://github.com/kwon13/LLM-Evo-Merge) | ✍️ [Blog](작성중..) | 💡[Inspired by Sakana AI](https://github.com/SakanaAI/evolutionary-model-merge)
 
 ![rloo](./assets/robot.jpeg)
 This project aims to optimize model merging by integrating LLMs into evolutionary strategies in a novel way. Instead of using the traditional CMA-ES approach, the goal is to improve model optimization by leveraging the intelligent search capabilities of LLMs to explore the parameter space more efficiently and adjust the search scope based on high-performing solutions.
