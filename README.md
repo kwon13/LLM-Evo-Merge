@@ -1,13 +1,14 @@
 # 🤖 LLM Evolutionary Merge
 
-🤗 [Model](https://huggingface.co/fiveflow/LLMEvoLLaMA-3.1-8B-v0.1) | 📂 [Github](https://github.com/kwon13/mergekit) | ✍️ [Blog](작성중..)
+🤗 [Model](https://huggingface.co/fiveflow/LLMEvoLLaMA-3.1-8B-v0.1) | 📂 [Github](https://github.com/kwon13/LLM-Evo-Merge) | ✍️ [Blog](작성중..)
 
 ![rloo](./assets/robot.jpeg)
-진화 전략(Evolutionary Strategy)을 LLM의 지능적인 탐색으로 보강하는 아이디어입니다. 이 방법은 기존의 CMA-ES 처럼 후보와 피트니스 점수를 기반으로 공분산 행렬을 최적화하는 대신, LLM이 피트니스 점수에 맞춰 genome의 값을 초기화하고, 상위 성능 솔루션을 기반으로 탐색 범위를 지능적으로 조정하여 진화적 알고리즘을 개선하는 것을 목표로 하였습니다.  
-현재는 Parameter Space 에서 최적화만 지원하며 추후 Data Flow Space 에서 최적화를 동시에 수행하는 코드를 업로드 할 예정입니다.
+This project aims to optimize model merging by integrating LLMs into evolutionary strategies in a novel way. Instead of using the traditional CMA-ES approach, the goal is to improve model optimization by leveraging the intelligent search capabilities of LLMs to explore the parameter space more efficiently and adjust the search scope based on high-performing solutions.
+
+Currently, the project supports optimization only within the Parameter Space, but I plan to extend its functionality to enable merging and optimization in the Data Flow Space as well. This will further enhance model merging by optimizing the interaction between data flow and parameters.
 
 ## Performance
-모델 학습 없이 Merge 만으로 한국어 성능이 뛰어난 모델을 만들기 위해 집중하였습니다.
+I focused on creating a high-performing Korean model solely through merging, without additional model training.
 <details>
 <summary>Merging Recipe</summary>
 
@@ -214,7 +215,7 @@ slices:
 ```
 </details>
 
-Merge에 사용한 모델은 아래와 같습니다.
+The models used for merging are listed below.
 ```
 Base Model: meta-llama/Llama-3.1-8B
 Model 1: NCSOFT/Llama-VARCO-8B-Instruct
@@ -222,8 +223,9 @@ Model 2: akjindal53244/Llama-3.1-Storm-8B
 ```
 ### Comparing LLMEvoLlama with Source in Korean Benchmark
 ![korean_performance](./assets/output.png)
-- LogicKor: 한국어로 된 수학, 글쓰기, 코딩, 이해, 문법, 추론 능력을 종합 적으로 평가하는 벤치마크입니다. (https://lk.instruct.kr/)
-- KoBest: 한국어에 대한 고급 지식이 필요한 5가지 자연어 이해 태스크로 구성된 벤치마크입니다. (https://arxiv.org/abs/2204.04541)
+- LogicKor: A benchmark that evaluates various linguistic abilities in Korean, including math, writing, coding, comprehension, grammar, and reasoning skills. (https://lk.instruct.kr/)
+
+- KoBest: A benchmark consisting of five natural language understanding tasks designed to test advanced Korean language comprehension. (https://arxiv.org/abs/2204.04541)
 
 ### Comparing LLMEvoLlama with Source in English Benchmark and Total Average
 | Model           | truthfulqa_mc2 (0-shot acc) | arc_challenge (0-shot acc) | Korean + English Performance (avg) |
@@ -236,8 +238,7 @@ Model 2: akjindal53244/Llama-3.1-Storm-8B
 ## Installation
 Install mergekit with the evolve (and optionally vllm) features:
 ```
-git clone https://github.com/kwon13/mergekit.git
-
+git clone https://github.com/kwon13/LLM-Evo-Merge.git
 cd mergekit
 pip install -e .[evolve,vllm]
 ```
@@ -372,273 +373,48 @@ If you're using custom task definitions (and you should be) then you can append 
 
 Override the batch size used during merge evaluation. If using vLLM `auto` is recommended (default).
 
-### CMA-ES options
+### LLM Evo options
 
-#### `--max-fevals`
+#### `--max-generation`
 
-Maximum number of merges to evaluate. Note that the `cma` package is very loosey-goosey with this number and will happily go over by 50% depending on the size of each generation. Set to 100 by default.
+max-generation: This option sets the maximum number of generations the algorithm will evolve. Once this value is reached, the algorithm stops further evolution and returns the best result. A higher value allows the algorithm to explore more generations and improve performance, but it increases computation cost. Default: 10
 
-#### `--sigma0`
+#### `--sigma-low`
 
-Initial value of sigma for CMA-ES. No need to play with this unless you really know what you're doing.
+This option sets the mutation strength applied when the fitness score improves. A lower value enables more fine-tuned exploration within a smaller range, allowing for precise adjustments based on already successful solutions. Setting a lower value helps with gradual optimization without excessive changes. Default: 0.05
+
+#### `--sigma-high`
+
+This option sets the mutation strength applied when the fitness score does not improve. A higher value allows for broader exploration in case the current solution is stagnating, making it easier to discover new possibilities. While a higher value broadens the search space, it may introduce larger changes. Default: 0.2
+
+#### `--max-retries`
+
+The number of retries when an error occurs during an API call.
+
+#### `--api-key`
+
+The authentication key used to access the OpenAI API.
+
+#### `--llm-model`
+
+The name of the LLM model to be used from OpenAI's available models.
+
 
 ### WandB logging
 
-`mergekit-evolve` supports logging metrics to Weights & Biases. Enable this functionality with the `--wandb` flag. Project and entity names can be overridden with the `--wandb-project` and `--wandb-entity` options.
+`llm_evo` supports logging metrics to Weights & Biases. Enable this functionality with the `--wandb` flag. Project and entity names can be overridden with the `--wandb-project` and `--wandb-entity` options.
 
 ### Example
 
 ```sh
-mergekit-evolve --strategy pool --wandb --wandb-project mergekit-evolve --wandb-entity arcee-ai --storage-path /path/to/mergekit-evolve/ ./config.yml
+python3 scripts/llm_evo.py --strategy pool --wandb --wandb-project mergekit-evolve --wandb-entity arcee-ai --storage-path /path/to/mergekit-evolve/ ./config.yml
 ```
 
-# mergekit
-
-`mergekit` is a toolkit for merging pre-trained language models. `mergekit` uses an out-of-core approach to perform unreasonably elaborate merges in resource-constrained situations. Merges can be run entirely on CPU or accelerated with as little as 8 GB of VRAM. Many merging algorithms are supported, with more coming as they catch my attention.
-
-Features:
-
-- Supports Llama, Mistral, GPT-NeoX, StableLM, and more
-- Many [merge methods](#merge-methods)
-- GPU or CPU execution
-- Lazy loading of tensors for low memory use
-- Interpolated gradients for parameter values (inspired by Gryphe's [BlockMerge_Gradient](https://github.com/Gryphe/BlockMerge_Gradient) script)
-- Piecewise assembly of language models from layers ("Frankenmerging")
-- [Mixture of Experts merging](#mixture-of-experts-merging)
-- [LORA extraction](#lora-extraction)
-- [Evolutionary merge methods](#evolutionary-merge-methods)
-
-🌐 GUI Launch Alert 🤗 - We are excited to announce the launch of a mega-GPU backed graphical user interface for mergekit in Arcee! This GUI simplifies the merging process, making it more accessible to a broader audience. Check it out and contribute at the [Arcee App](https://app.arcee.ai). There is also a [Hugging Face Space](https://huggingface.co/mergekit-community) with limited amounts of GPUs.
-
-## Installation
-
-```sh
-git clone https://github.com/arcee-ai/mergekit.git
-cd mergekit
-
-pip install -e .  # install the package and make scripts available
-```
-
-If the above fails with the error of:
-
-```
-ERROR: File "setup.py" or "setup.cfg" not found. Directory cannot be installed in editable mode:
-(A "pyproject.toml" file was found, but editable mode currently requires a setuptools-based build.)
-```
-
-You may need to upgrade pip to > 21.3 with the command `python3 -m pip install --upgrade pip`
-
-## Usage
-
-The script `mergekit-yaml` is the main entry point for `mergekit`. It takes a YAML configuration file and an output path, like so:
-
-```sh
-mergekit-yaml path/to/your/config.yml ./output-model-directory [--cuda] [--lazy-unpickle] [--allow-crimes] [... other options]
-```
-
-This will run the merge and write your merged model to `./output-model-directory`.
-
-For more information on the arguments accepted by `mergekit-yaml` run the command `mergekit-yaml --help`.
-
-### Uploading to Huggingface
-
-When you have a merged model you're happy with, you may want to share it on the Hugging Face Hub. `mergekit` generates a `README.md` for your merge with some basic information for a model card. You can edit it to include more details about your merge, like giving it a good name or explaining what it's good at; rewrite it entirely; or use the generated `README.md` as-is. It is also possible to edit your `README.md` online once it has been uploaded to the Hub.
-
-Once you're happy with your model card and merged model, you can upload it to the Hugging Face Hub using the [huggingface_hub](https://huggingface.co/docs/huggingface_hub/index) Python library.
-
-```
-# log in to huggingface with an access token (must have write permission)
-huggingface-cli login
-# upload your model
-huggingface-cli upload your_hf_username/my-cool-model ./output-model-directory .
-```
-
-The [documentation](https://huggingface.co/docs/huggingface_hub/guides/cli#huggingface-cli-upload) for `huggingface_hub` goes into more detail about other options for uploading.
-
-## Merge Configuration
-
-Merge configurations are YAML documents specifying the operations to perform in order to produce your merged model.
-Below are the primary elements of a configuration file:
-
-- `merge_method`: Specifies the method to use for merging models. See [Merge Methods](#merge-methods) for a list.
-- `slices`: Defines slices of layers from different models to be used. This field is mutually exclusive with `models`.
-- `models`: Defines entire models to be used for merging. This field is mutually exclusive with `slices`.
-- `base_model`: Specifies the base model used in some merging methods.
-- `parameters`: Holds various parameters such as weights and densities, which can also be specified at different levels of the configuration.
-- `dtype`: Specifies the data type used for the merging operation.
-- `tokenizer_source`: Determines how to construct a tokenizer for the merged model.
-
-### Parameter Specification
-
-Parameters are flexible and can be set with varying precedence. They can be specified conditionally using tensor name filters, which allows finer control such as differentiating between attention heads and fully connected layers.
-
-Parameters can be specified as:
-
-- **Scalars**: Single floating-point values.
-- **Gradients**: List of floating-point values, specifying an interpolated gradient.
-
-The parameters can be set at different levels, with decreasing precedence as follows:
-
-1. `slices.*.sources.parameters` - applying to a specific input slice
-2. `slices.*.parameters` - applying to a specific output slice
-3. `models.*.parameters` or `input_model_parameters` - applying to any tensors coming from specific input models
-4. `parameters` - catchall
-
-### Tokenizer Source
-
-The `tokenizer_source` field of a configuration file determines what tokenizer is used by the merged model. This also effects how embeddings and language model heads are merged.
-
-This functionality is still experimental and may break. Please file an issue if you encounter any issues with it.
-
-Valid values:
-
-- `base`: use the tokenizer from the base model
-- `union`: construct a tokenizer with all tokens from all models
-- `model:<model_path>`: use the tokenizer from a specific model
-
-If set, mergekit will find a mapping between each model's vocabulary and the output tokenizer. This allows models with different vocabularies or added tokens to be meaningfully merged.
-
-`tokenizer_source` is compatible with all merge methods, but when used `lm_head`/`embed_tokens` will be merged linearly. For two-model merges, the `embed_slerp` parameter can be set to `true` to use SLERP instead.
-
-If the `tokenizer_source` field is not set, mergekit will fall back to its legacy default behavior. The tokenizer for the base model (or first model in the merge, if no base model is specified) will be copied to the output directory. The parameter matrices for `lm_head`/`embed_tokens` will be truncated to the smallest size present in the merge. In _most_ cases this corresponds to using the tokenizer for the base model.
-
-### Examples
-
-Several examples of merge configurations are available in [`examples/`](examples/).
-
-## Merge Methods
-
-A quick overview of the currently supported merge methods:
-
-| Method                                                                                           | `merge_method` value | Multi-Model | Uses base model |
-| ------------------------------------------------------------------------------------------------ | -------------------- | ----------- | --------------- |
-| Linear ([Model Soups](https://arxiv.org/abs/2203.05482))                                         | `linear`             | ✅          | ❌              |
-| SLERP                                                                                            | `slerp`              | ❌          | ✅              |
-| [Task Arithmetic](https://arxiv.org/abs/2212.04089)                                              | `task_arithmetic`    | ✅          | ✅              |
-| [TIES](https://arxiv.org/abs/2306.01708)                                                         | `ties`               | ✅          | ✅              |
-| [DARE](https://arxiv.org/abs/2311.03099) [TIES](https://arxiv.org/abs/2306.01708)                | `dare_ties`          | ✅          | ✅              |
-| [DARE](https://arxiv.org/abs/2311.03099) [Task Arithmetic](https://arxiv.org/abs/2212.04089)     | `dare_linear`        | ✅          | ✅              |
-| Passthrough                                                                                      | `passthrough`        | ❌          | ❌              |
-| [Model Breadcrumbs](https://arxiv.org/abs/2312.06795)                                            | `breadcrumbs`        | ✅          | ✅              |
-| [Model Breadcrumbs](https://arxiv.org/abs/2312.06795) + [TIES](https://arxiv.org/abs/2306.01708) | `breadcrumbs_ties`   | ✅          | ✅              |
-| [Model Stock](https://arxiv.org/abs/2403.19522)                                                  | `model_stock`        | ✅          | ✅              |
-| [DELLA](https://arxiv.org/abs/2406.11617)                                                  | `della`        | ✅          | ✅              |
-| [DELLA](https://arxiv.org/abs/2406.11617) [Task Arithmetic](https://arxiv.org/abs/2212.04089)                                                  | `della_linear`        | ✅          | ✅              |
-### Linear
-
-The classic merge method - a simple weighted average.
-
-Parameters:
-
-- `weight` - relative (or absolute if `normalize=False`) weighting of a given tensor
-- `normalize` - if true, the weights of all models contributing to a tensor will be normalized. Default behavior.
-
-### SLERP
-
-Spherically interpolate the parameters of two models. One must be set as `base_model`.
-
-Parameters:
-
-- `t` - interpolation factor. At `t=0` will return `base_model`, at `t=1` will return the other one.
-
-### [Task Arithmetic](https://arxiv.org/abs/2212.04089)
-
-Computes "task vectors" for each model by subtracting a base model. Merges the task vectors linearly and adds back the base. Works great for models that were fine tuned from a common ancestor. Also a super useful mental framework for several of the more involved merge methods.
-
-Parameters: same as [Linear](#linear)
-
-### [TIES](https://arxiv.org/abs/2306.01708)
-
-Builds on the task arithmetic framework. Resolves interference between models by sparsifying the task vectors and applying a sign consensus algorithm. Allows you to merge a larger number of models and retain more of their strengths.
-
-Parameters: same as [Linear](#linear), plus:
-
-- `density` - fraction of weights in differences from the base model to retain
-
-### [DARE](https://arxiv.org/abs/2311.03099)
-
-In the same vein as TIES, sparsifies task vectors to reduce interference. Differs in that DARE uses random pruning with a novel rescaling to better match performance of the original models. DARE can be used either with the sign consensus algorithm of TIES (`dare_ties`) or without (`dare_linear`).
-
-Parameters: same as [TIES](#ties) for `dare_ties`, or [Linear](#linear) for `dare_linear`
-
-### Passthrough
-
-`passthrough` is a no-op that simply passes input tensors through unmodified. It is meant to be used for layer-stacking type merges where you have only one input model. Useful for frankenmerging.
-
-### [Model Breadcrumbs](https://arxiv.org/abs/2312.06795)
-
-An extension of task arithmetic that discards both small and and extremely large differences from the base model. As with DARE, the Model Breadcrumbs algorithm can be used with (`breadcrumbs_ties`) or without (`breadcrumbs`) the sign consensus algorithm of TIES.
-
-Parameters: same as [Linear](#linear), plus:
-
-- `density` - fraction of weights in differences from the base model to retain
-- `gamma` - fraction of largest magnitude differences to remove
-
-Note that `gamma` corresponds with the parameter `β` described in the paper, while `density` is the final density of the sparsified tensors (related to `γ` and `β` by `density = 1 - γ - β`). For good default values, try `density: 0.9` and `gamma: 0.01`.
-
-### [Model Stock](https://arxiv.org/abs/2403.19522)
-
-Uses some neat geometric properties of fine tuned models to compute good weights for linear interpolation. Requires at least three models, including a base model.
-
-Parameters:
-
-- `filter_wise`: if true, weight calculation will be per-row rather than per-tensor. Not recommended.
-
-### [DELLA](https://arxiv.org/abs/2406.11617)
-
-Building upon DARE, DELLA uses adaptive pruning based on parameter magnitudes. DELLA first ranks parameters in each row of delta parameters and assigns drop probabilities inversely proportional to their magnitudes. This allows it to retain more important changes while reducing interference. After pruning, it rescales the remaining parameters similar to [DARE](#dare). DELLA can be used with (`della`) or without (`della_linear`) the sign elect step of TIES
-
-Parameters: same as [Linear](#linear), plus:
-- `density` - fraction of weights in differences from the base model to retain
-- `epsilon` - maximum change in drop probability based on magnitude. Drop probabilities assigned will range from `density - epsilon` to `density + epsilon`. (When selecting values for `density` and `epsilon`, ensure that the range of probabilities falls within 0 to 1)
-- `lambda` - scaling factor for the final merged delta parameters before merging with the base parameters.
-
-## LoRA extraction
-
-Mergekit allows extracting PEFT-compatible low-rank approximations of finetuned models.
-
-### Usage
-
-```sh
-mergekit-extract-lora finetuned_model_id_or_path base_model_id_or_path output_path [--no-lazy-unpickle] --rank=desired_rank
-```
-
-## Mixture of Experts merging
-
-The `mergekit-moe` script supports merging multiple dense models into a mixture of experts, either for direct use or for further training. For more details see the [`mergekit-moe` documentation](docs/moe.md).
-
-## Evolutionary merge methods
-
-See `docs/evolve.md` for details.
-
-## ✨ Merge in the Cloud ✨
-
-We host merging on Arcee's cloud GPUs - you can launch a cloud merge in the [Arcee App](https://app.arcee.ai). Or through python - grab an ARCEE_API_KEY:
-
-`export ARCEE_API_KEY=<your-api-key>`
-`pip install -q arcee-py`
-
-```
-import arcee
-arcee.merge_yaml("bio-merge","./examples/bio-merge.yml")
-```
-
-Check your merge status at the [Arcee App](https://app.arcee.ai)
-
-When complete, either deploy your merge:
-
-```
-arcee.start_deployment("bio-merge", merging="bio-merge")
-```
-
-Or download your merge:
-
-`!arcee merging download bio-merge`
+## Acknowledgement
+I would like to express my gratitude to Sakana AI for inspiring me with their intriguing ideas, and to Meta, NCSOFT, and Ashvini Kumar Jindal for their exceptional work in developing the impressive Llama model. My code was built upon the Mergekit repository, and I sincerely thank the developers for their efforts throughout the process.
 
 
 ## Citation
-
-We now have a [paper](https://arxiv.org/abs/2403.13257) you can cite for the MergeKit library:
 
 ```bibtex
 @article{goddard2024arcee,
