@@ -2,8 +2,8 @@
 
 🤗 [Model](https://huggingface.co/fiveflow/LLMEvoLLaMA-3.1-8B-v0.1) | 📂 [Github](https://github.com/kwon13/LLM-Evo-Merge) | ✍️ [Blog](작성중..) | 💡[Inspired by Sakana AI](https://github.com/SakanaAI/evolutionary-model-merge)
 
-![rloo](./assets/robot.jpeg)
-This project aims to optimize model merging by integrating LLMs into evolutionary strategies in a novel way. Instead of using the traditional CMA-ES approach, the goal is to improve model optimization by leveraging the intelligent search capabilities of LLMs to explore the parameter space more efficiently and adjust the search scope based on high-performing solutions.
+![robot](./assets/robot.jpeg)
+This project aims to optimize model merging by integrating LLMs into evolutionary strategies in a novel way. Instead of using the [CMA-ES](https://en.wikipedia.org/wiki/CMA-ES) approach, the goal is to improve model optimization by [leveraging the search capabilities of LLMs](https://arxiv.org/abs/2402.18381) to explore the parameter space more efficiently and adjust the search scope based on high-performing solutions.
 
 Currently, the project supports optimization only within the Parameter Space, but I plan to extend its functionality to enable merging and optimization in the Data Flow Space as well. This will further enhance model merging by optimizing the interaction between data flow and parameters.
 
@@ -422,5 +422,15 @@ I would like to express my gratitude to Sakana AI for inspiring me with their in
   author={Goddard, Charles and Siriwardhana, Shamane and Ehghaghi, Malikeh and Meyers, Luke and Karpukhin, Vlad and Benedict, Brian and McQuade, Mark and Solawetz, Jacob},
   journal={arXiv preprint arXiv:2403.13257},
   year={2024}
+}
+
+@misc{lange2024largelanguagemodelsevolution,
+  title={Large Language Models As Evolution Strategies}, 
+  author={Robert Tjarko Lange and Yingtao Tian and Yujin Tang},
+  year={2024},
+  eprint={2402.18381},
+  archivePrefix={arXiv},
+  primaryClass={cs.AI},
+  url={https://arxiv.org/abs/2402.18381}, 
 }
 ```
