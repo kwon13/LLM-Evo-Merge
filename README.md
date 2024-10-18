@@ -1,3 +1,397 @@
+# 🤖 LLM Evolutionary Merge
+
+🤗 [Model](https://huggingface.co/fiveflow/LLMEvoLLaMA-3.1-8B-v0.1) | 📂 [Github](https://github.com/kwon13/mergekit) | ✍️ [Blog](작성중..)
+
+![rloo](./assets/robot.jpeg)
+진화 전략(Evolutionary Strategy)을 LLM의 지능적인 탐색으로 보강하는 아이디어입니다. 이 방법은 기존의 CMA-ES 처럼 후보와 피트니스 점수를 기반으로 공분산 행렬을 최적화하는 대신, LLM이 피트니스 점수에 맞춰 genome의 값을 초기화하고, 상위 성능 솔루션을 기반으로 탐색 범위를 지능적으로 조정하여 진화적 알고리즘을 개선하는 것을 목표로 하였습니다.  
+현재는 Parameter Space 에서 최적화만 지원하며 추후 Data Flow Space 에서 최적화를 동시에 수행하는 코드를 업로드 할 예정입니다.
+
+## Performance
+모델 학습 없이 Merge 만으로 한국어 성능이 뛰어난 모델을 만들기 위해 집중하였습니다.
+<details>
+<summary>Merging Recipe</summary>
+
+```YAML
+base_model: meta-llama/Llama-3.1-8B
+dtype: bfloat16
+merge_method: task_arithmetic
+allow_negative_weights: true
+parameters:
+  int8_mask: 1.0
+  normalize: 1.0
+slices:
+- sources:
+  - layer_range: [0, 2]
+    model: NCSOFT/Llama-VARCO-8B-Instruct
+    parameters:
+      weight: 1
+  - layer_range: [0, 2]
+    model: akjindal53244/Llama-3.1-Storm-8B
+    parameters:
+      weight: 0.3475802891062396
+  - layer_range: [0, 2]
+    model: meta-llama/Llama-3.1-8B
+
+- sources:
+  - layer_range: [2, 4]
+    model: NCSOFT/Llama-VARCO-8B-Instruct
+    parameters:
+      weight: 0.8971381657317269
+  - layer_range: [2, 4]
+    model: akjindal53244/Llama-3.1-Storm-8B
+    parameters:
+      weight: 0.45369921781118544
+  - layer_range: [2, 4]
+    model: meta-llama/Llama-3.1-8B
+
+- sources:
+  - layer_range: [4, 6]
+    model: NCSOFT/Llama-VARCO-8B-Instruct
+    parameters:
+      weight: 0.5430828084884667
+  - layer_range: [4, 6]
+    model: akjindal53244/Llama-3.1-Storm-8B
+    parameters:
+      weight: 0.2834723715836387
+  - layer_range: [4, 6]
+    model: meta-llama/Llama-3.1-8B
+
+- sources:
+  - layer_range: [6, 8]
+    model: NCSOFT/Llama-VARCO-8B-Instruct
+    parameters:
+      weight: 0.419043948030593
+  - layer_range: [6, 8]
+    model: akjindal53244/Llama-3.1-Storm-8B
+    parameters:
+      weight: 0.3705268601566145
+  - layer_range: [6, 8]
+    model: meta-llama/Llama-3.1-8B
+
+- sources:
+  - layer_range: [8, 10]
+    model: NCSOFT/Llama-VARCO-8B-Instruct
+    parameters:
+      weight: 0.3813333860404775
+  - layer_range: [8, 10]
+    model: akjindal53244/Llama-3.1-Storm-8B
+    parameters:
+      weight: 0.7634501436288518
+  - layer_range: [8, 10]
+    model: meta-llama/Llama-3.1-8B
+
+- sources:
+  - layer_range: [10, 12]
+    model: NCSOFT/Llama-VARCO-8B-Instruct
+    parameters:
+      weight: 0.49134830660275863
+  - layer_range: [10, 12]
+    model: akjindal53244/Llama-3.1-Storm-8B
+    parameters:
+      weight: 0.7211994938499454
+  - layer_range: [10, 12]
+    model: meta-llama/Llama-3.1-8B
+
+- sources:
+  - layer_range: [12, 14]
+    model: NCSOFT/Llama-VARCO-8B-Instruct
+    parameters:
+      weight: 0.9218963071448836
+  - layer_range: [12, 14]
+    model: akjindal53244/Llama-3.1-Storm-8B
+    parameters:
+      weight: 0.5117022419864319
+  - layer_range: [12, 14]
+    model: meta-llama/Llama-3.1-8B
+
+- sources:
+  - layer_range: [14, 16]
+    model: NCSOFT/Llama-VARCO-8B-Instruct
+    parameters:
+      weight: 0.8238938467581831
+  - layer_range: [14, 16]
+    model: akjindal53244/Llama-3.1-Storm-8B
+    parameters:
+      weight: 0.851712316016478
+  - layer_range: [14, 16]
+    model: meta-llama/Llama-3.1-8B
+
+- sources:
+  - layer_range: [16, 18]
+    model: NCSOFT/Llama-VARCO-8B-Instruct
+    parameters:
+      weight: 0.3543028846914006
+  - layer_range: [16, 18]
+    model: akjindal53244/Llama-3.1-Storm-8B
+    parameters:
+      weight: 0.6864368345788241
+  - layer_range: [16, 18]
+    model: meta-llama/Llama-3.1-8B
+
+- sources:
+  - layer_range: [18, 20]
+    model: NCSOFT/Llama-VARCO-8B-Instruct
+    parameters:
+      weight: 0.9189961100847883
+  - layer_range: [18, 20]
+    model: akjindal53244/Llama-3.1-Storm-8B
+    parameters:
+      weight: 0.5800251781306379
+  - layer_range: [18, 20]
+    model: meta-llama/Llama-3.1-8B
+
+- sources:
+  - layer_range: [20, 22]
+    model: NCSOFT/Llama-VARCO-8B-Instruct
+    parameters:
+      weight: 0.9281691677008521
+  - layer_range: [20, 22]
+    model: akjindal53244/Llama-3.1-Storm-8B
+    parameters:
+      weight: 0.5356892784211416
+  - layer_range: [20, 22]
+    model: meta-llama/Llama-3.1-8B
+
+- sources:
+  - layer_range: [22, 24]
+    model: NCSOFT/Llama-VARCO-8B-Instruct
+    parameters:
+      weight: 0.839268407952539
+  - layer_range: [22, 24]
+    model: akjindal53244/Llama-3.1-Storm-8B
+    parameters:
+      weight: 0.5082186376599986
+  - layer_range: [22, 24]
+    model: meta-llama/Llama-3.1-8B
+
+- sources:
+  - layer_range: [24, 26]
+    model: NCSOFT/Llama-VARCO-8B-Instruct
+    parameters:
+      weight: 0.6241902192095534
+  - layer_range: [24, 26]
+    model: akjindal53244/Llama-3.1-Storm-8B
+    parameters:
+      weight: 0.2945221540685877
+  - layer_range: [24, 26]
+    model: meta-llama/Llama-3.1-8B
+
+- sources:
+  - layer_range: [26, 28]
+    model: NCSOFT/Llama-VARCO-8B-Instruct
+    parameters:
+      weight: 0.7030728026501202
+  - layer_range: [26, 28]
+    model: akjindal53244/Llama-3.1-Storm-8B
+    parameters:
+      weight: 0.2350478509634181
+  - layer_range: [26, 28]
+    model: meta-llama/Llama-3.1-8B
+
+- sources:
+  - layer_range: [28, 30]
+    model: NCSOFT/Llama-VARCO-8B-Instruct
+    parameters:
+      weight: 0.2590342230366074
+  - layer_range: [28, 30]
+    model: akjindal53244/Llama-3.1-Storm-8B
+    parameters:
+      weight: 0.006083182855312869
+  - layer_range: [28, 30]
+    model: meta-llama/Llama-3.1-8B
+
+- sources:
+  - layer_range: [30, 32]
+    model: NCSOFT/Llama-VARCO-8B-Instruct
+    parameters:
+      weight: 1
+  - layer_range: [30, 32]
+    model: akjindal53244/Llama-3.1-Storm-8B
+    parameters:
+      weight: 0.234650395825126
+  - layer_range: [30, 32]
+    model: meta-llama/Llama-3.1-8B
+```
+</details>
+
+Merge에 사용한 모델은 아래와 같습니다.
+```
+Base Model: meta-llama/Llama-3.1-8B
+Model 1: NCSOFT/Llama-VARCO-8B-Instruct
+Model 2: akjindal53244/Llama-3.1-Storm-8B
+```
+### Comparing LLMEvoLlama with Source in Korean Benchmark
+![korean_performance](./assets/output.png)
+- LogicKor: 한국어로 된 수학, 글쓰기, 코딩, 이해, 문법, 추론 능력을 종합 적으로 평가하는 벤치마크입니다. (https://lk.instruct.kr/)
+- KoBest: 한국어에 대한 고급 지식이 필요한 5가지 자연어 이해 태스크로 구성된 벤치마크입니다. (https://arxiv.org/abs/2204.04541)
+
+### Comparing LLMEvoLlama with Source in English Benchmark and Total Average
+| Model           | truthfulqa_mc2 (0-shot acc) | arc_challenge (0-shot acc) | Korean + English Performance (avg) |
+|-----------------|-------------------------|------------------------|------------------------------|
+| [VARCO](https://huggingface.co/NCSOFT/Llama-VARCO-8B-Instruct)           | 0.53                  | 0.47                 | 0.68                         |
+| [Llama-Instruct](https://huggingface.co/meta-llama/Llama-3.1-8B-Instruct)  | 0.53                  | 0.52                 | 0.66                         |
+| [Llama-Storm](https://huggingface.co/akjindal53244/Llama-3.1-Storm-8B)     | 0.59                  | 0.52                 | 0.67                         |
+| [LLMEvoLLaMA](https://huggingface.co/fiveflow/LLMEvoLLaMA-3.1-8B-v0.1)     | 0.57                  | 0.50                 | **0.71**                         |
+
+## Installation
+Install mergekit with the evolve (and optionally vllm) features:
+```
+git clone https://github.com/kwon13/mergekit.git
+
+cd mergekit
+pip install -e .[evolve,vllm]
+```
+
+If you had a perfectly good pytorch environment going and installing an older version of vLLM downgraded it and broke flash attention, run the following commands to fix it:
+
+```sh
+pip uninstall flash-attn
+pip cache purge
+pip install flash-attn
+```
+
+## Configuration
+
+`mergekit-evolve` takes in a YAML configuration file that defines how the merge is parameterized and what metrics to optimize. The general syntax is as follows:
+
+```yml
+genome:
+    models:
+       - model_1
+       - model_2
+       ...
+       - model_n
+    merge_method: dare_ties
+    base_model: base_model_if_needed
+    tokenizer_source: null # optional
+    layer_granularity: 8
+
+    # optional:
+    normalize: false
+    allow_negative_weights: false
+    smooth: false
+    filters: ...
+tasks:
+  - name: lm_eval_task_name
+    weight: 1.0 # optional
+    metric: "acc,none" # defaults to acc,none
+  - name: ... # as many as you want
+```
+
+### Genome Definition
+
+The `genome` section of the configuration file defines the parameter space that `mergekit-evolve` will be optimizing in.
+
+#### `models`
+
+This should be a list of all of the models you want available to be merged. Depending on the merge method not all are guaranteed to be used in the final merge.
+
+#### `merge_method`
+
+Merge method to be used. Currently supported values are `linear`, `dare_ties`, `task_arithmetic`, `ties`, and `slerp`.
+
+#### `base_model`
+
+The base model for the merge, if applicable.
+
+#### `layer_granularity`
+
+A set of parameters will be introduced for each consecutive slice of `layer_granularity` layers. So for example, a 32-layer model like `mistralai/Mistral-7B-v0.1` with `layer_granularity: 8` will be divided into 4 groups of 8 layers with different merge parameters for each. The value specified here must be a divisor of the number of layers in your input models. Large values of `layer_granularity` will reduce the search space greatly, meaning you will get faster convergence at the cost of a potentially less good global solution.
+
+When not set, one set of parameters will be used for all layers.
+
+#### `normalize`
+
+Sets the `normalize` flag when merging. For methods like `linear`, `ties`, and `dare_ties` this constrains the search space to a set of definitely valid models. Similarly to `layer_granularity`, this can greatly speed up convergence at the cost of ruling out oddball solutions that might score better than more standard merges.
+
+#### `allow_negative_weights`
+
+Pretty self explanatory. When this flag is not set, the absolute value of weight parameters is used. Sensible search space reduction for `linear` and `slerp`. For task arithmetic based methods you probably want `allow_negative_weights: true`.
+
+#### `smooth`
+
+If set to `true`, then parameter values will be interpolated across layers instead of assigning a single, fixed value to each block.
+
+#### `filters`
+
+Accepts a list of filters, as in `mergekit-yaml`, by which to separate the parameters. So, for example, setting filters as below for a Llama-based merge:
+
+```yaml
+filters:
+  - self_attn
+  - mlp
+```
+
+Will divide up the merge parameters into three groups - self attention parameters, MLP parameters, and a third for everything else. Separating the parameters out like this can be very beneficial when merging models trained on different prompt formats. It also makes your parameter space three times as big though!
+
+### Task Definition
+
+To evaluate the produced merges you need to specify a list of tasks supported by the EleutherAI LM evaluation harness. This can be either [built in tasks](https://github.com/EleutherAI/lm-evaluation-harness/tree/main/lm_eval/tasks) (don't be naughty) or tasks you define yourself (see the [New Task Guide](https://github.com/EleutherAI/lm-evaluation-harness/blob/main/docs/new_task_guide.md) for how). If your task does not use `acc` as the metric then you must specify the correct metric name. Each task can also optionally have a weight associated.
+
+`mergekit-evolve` aims to maximize the score of the merge, so if you are using any tasks or metrics where a lower score is better (like perplexity) be sure to assign a negative weight to that task.
+
+## Running `mergekit-evolve`
+
+```sh
+mergekit-evolve [OPTIONS] --storage-path PATH GENOME_CONFIG_PATH
+```
+
+`mergekit-evolve` needs a storage path specified, where it will save the input models, merges to evaluate, and the config for the current best merge evaluated. If you are not using in-memory merging this can require a _lot_ of space - expect at least one fp16 model per GPU.
+
+Some important options:
+
+### Scheduling Strategy (`--strategy`)
+
+There are three different strategies implemented for scheduling merging and evaluation jobs.
+
+#### `pool`
+
+Assigns an actor to each GPU in your cluster and guarantees merges and evaluations are performed on the same node. This is a safe default suitable for any configuration, local or distributed.
+
+#### `buffered`
+
+Maintains a buffer of tasks scheduled to ensure that there is always a model mergign or ready to evaluate for each gpu. Allows for concurrent merging and evaluation of models on the same GPU if enough VRAM is available. Only suitable for a single-node setup or when `--storage-path` points to a fast shared filesystem.
+
+#### `serial`
+
+Uses Ray placement groups to ensure merges and their evaluations happen on the same node, but otherwise just lets Ray take the wheel. Maybe give a try if you're having trouble with the other two, otherwise probably don't use it.
+
+### Evaluation LLM Backend
+
+By default `mergekit-evolve` will use the `hf` backend for `lm-eval`. To use vLLM instead, pass the `--vllm` flag.
+
+### On-Disk vs. In-Memory
+
+By default `mergekit-evolve` will perform merges, write the result to disk, then start up an instance of lm-eval pointing at that path. This is a safe default and will generally always work but also causes a lot of GPU downtime and eats disk space. When using the `pool` scheduling strategy, you have the option to instead keep a model resident in memory and directly update its parameters instead of merging to disk. This is much faster and uses no additional disk space. However, it does involve mucking around in the internals of vLLM and the LM evaluation harness. So it might break at any moment! Choose wisely. Use `--in-memory` to enable this mode.
+
+### Task search path
+
+If you're using custom task definitions (and you should be) then you can append to the search path using the `--task-search-path` option. This should point to the directory your custom task YAML is in (or a parent of that directory). Multiple paths can be included by repeating the option.
+
+### Batch size
+
+Override the batch size used during merge evaluation. If using vLLM `auto` is recommended (default).
+
+### CMA-ES options
+
+#### `--max-fevals`
+
+Maximum number of merges to evaluate. Note that the `cma` package is very loosey-goosey with this number and will happily go over by 50% depending on the size of each generation. Set to 100 by default.
+
+#### `--sigma0`
+
+Initial value of sigma for CMA-ES. No need to play with this unless you really know what you're doing.
+
+### WandB logging
+
+`mergekit-evolve` supports logging metrics to Weights & Biases. Enable this functionality with the `--wandb` flag. Project and entity names can be overridden with the `--wandb-project` and `--wandb-entity` options.
+
+### Example
+
+```sh
+mergekit-evolve --strategy pool --wandb --wandb-project mergekit-evolve --wandb-entity arcee-ai --storage-path /path/to/mergekit-evolve/ ./config.yml
+```
+
 # mergekit
 
 `mergekit` is a toolkit for merging pre-trained language models. `mergekit` uses an out-of-core approach to perform unreasonably elaborate merges in resource-constrained situations. Merges can be run entirely on CPU or accelerated with as little as 8 GB of VRAM. Many merging algorithms are supported, with more coming as they catch my attention.
