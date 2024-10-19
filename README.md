@@ -399,7 +399,7 @@ The name of the LLM model to be used from OpenAI's available models.
 ### Example
 
 ```sh
-python3 scripts/llm_evo.py --strategy pool --wandb --wandb-project mergekit-evolve --wandb-entity arcee-ai --storage-path /path/to/mergekit-evolve/ ./config.yml
+python3 ./mergekit/scripts/llm_evo.py --strategy pool --wandb --wandb-project mergekit-evolve --wandb-entity arcee-ai --storage-path /path/to/mergekit-evolve/ ./config.yml
 ```
 
 ## Acknowledgement
