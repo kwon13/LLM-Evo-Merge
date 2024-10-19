@@ -236,24 +236,16 @@ Model 2: akjindal53244/Llama-3.1-Storm-8B
 | [LLMEvoLLaMA](https://huggingface.co/fiveflow/LLMEvoLLaMA-3.1-8B-v0.1)     | 0.57                  | 0.50                 | **0.71**                         |
 
 ## Installation
-Install mergekit with the evolve (and optionally vllm) features:
+Install LLM-Evo-Merge with the evolve (and optionally vllm) features:
 ```
 git clone https://github.com/kwon13/LLM-Evo-Merge.git
 cd LLM-Evo-Merge
 pip install -e .[evolve,vllm]
 ```
 
-If you had a perfectly good pytorch environment going and installing an older version of vLLM downgraded it and broke flash attention, run the following commands to fix it:
-
-```sh
-pip uninstall flash-attn
-pip cache purge
-pip install flash-attn
-```
-
 ## Configuration
 
-`mergekit-evolve` takes in a YAML configuration file that defines how the merge is parameterized and what metrics to optimize. The general syntax is as follows:
+LLM-Evo-Merge takes in a YAML configuration file that defines how the merge is parameterized and what metrics to optimize. The general syntax is as follows:
 
 ```yml
 genome:
