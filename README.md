@@ -411,7 +411,7 @@ python3 scripts/llm_evo.py --strategy pool --wandb --wandb-project mergekit-evol
 ```
 
 ## Acknowledgement
-I would like to express my gratitude to Sakana AI for inspiring me with their intriguing ideas, and to Meta, NCSOFT, and Ashvini Kumar Jindal for their exceptional work in developing the impressive Llama model. My code was built upon the Mergekit repository, and I sincerely thank the developers for their efforts throughout the process.
+I would like to express my gratitude to Sakana AI for inspiring me with their intriguing ideas. My code was built upon the Mergekit repository, and I sincerely thank the developers for their efforts throughout the process.
 
 
 ## Citation
@@ -432,5 +432,15 @@ I would like to express my gratitude to Sakana AI for inspiring me with their in
   archivePrefix={arXiv},
   primaryClass={cs.AI},
   url={https://arxiv.org/abs/2402.18381}, 
+}
+
+@misc{akiba2024evolutionaryoptimizationmodelmerging,
+      title={Evolutionary Optimization of Model Merging Recipes}, 
+      author={Takuya Akiba and Makoto Shing and Yujin Tang and Qi Sun and David Ha},
+      year={2024},
+      eprint={2403.13187},
+      archivePrefix={arXiv},
+      primaryClass={cs.NE},
+      url={https://arxiv.org/abs/2403.13187}, 
 }
 ```
