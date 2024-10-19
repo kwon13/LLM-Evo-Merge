@@ -239,7 +239,7 @@ Model 2: akjindal53244/Llama-3.1-Storm-8B
 Install mergekit with the evolve (and optionally vllm) features:
 ```
 git clone https://github.com/kwon13/LLM-Evo-Merge.git
-cd mergekit
+cd LLM-Evo-Merge
 pip install -e .[evolve,vllm]
 ```
 
