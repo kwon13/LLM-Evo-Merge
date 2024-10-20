@@ -1,6 +1,6 @@
-# 🤖 LLM Evolutionary Merge
+# 🤖 LLM-based Evolution Strategy Merging
 
-🤗 [Model](https://huggingface.co/fiveflow/LLMEvoLLaMA-3.1-8B-v0.1) | 📂 [Github](https://github.com/kwon13/LLM-Evo-Merge) | ✍️ [Blog](작성중..) | 💡[Inspired by Sakana AI](https://github.com/SakanaAI/evolutionary-model-merge)
+🤗 [Model](https://huggingface.co/fiveflow/LLMEvoLLaMA-3.1-8B-v0.1) | 📂 [Github](https://github.com/kwon13/LLM-Evo-Merge) | ✍️ [Blog](https://fiveflow.notion.site/LLM-based-Evolution-Strategy-Merging-1254cec6dd278041a7f6c07dc4039fe8?pvs=4) | 💡[Inspired by Sakana AI](https://github.com/SakanaAI/evolutionary-model-merge)
 
 ![robot](./assets/robot.jpeg)
 This project aims to optimize model merging by integrating LLMs into evolutionary strategies in a novel way. Instead of using the [CMA-ES](https://en.wikipedia.org/wiki/CMA-ES) approach, the goal is to improve model optimization by [leveraging the search capabilities of LLMs](https://arxiv.org/abs/2402.18381) to explore the parameter space more efficiently and adjust the search scope based on high-performing solutions.
@@ -323,10 +323,10 @@ To evaluate the produced merges you need to specify a list of tasks supported by
 
 `mergekit-evolve` aims to maximize the score of the merge, so if you are using any tasks or metrics where a lower score is better (like perplexity) be sure to assign a negative weight to that task.
 
-## Running `mergekit-evolve`
+## Running `llm_evo`
 
 ```sh
-mergekit-evolve [OPTIONS] --storage-path PATH GENOME_CONFIG_PATH
+python3 ./mergekit/scripts/llm_evo.py [OPTIONS] --storage-path PATH GENOME_CONFIG_PATH
 ```
 
 `mergekit-evolve` needs a storage path specified, where it will save the input models, merges to evaluate, and the config for the current best merge evaluated. If you are not using in-memory merging this can require a _lot_ of space - expect at least one fp16 model per GPU.
@@ -365,7 +365,7 @@ If you're using custom task definitions (and you should be) then you can append 
 
 Override the batch size used during merge evaluation. If using vLLM `auto` is recommended (default).
 
-### LLM Evo options
+### LLMEvo options
 
 #### `--max-generation`
 
@@ -399,7 +399,7 @@ The name of the LLM model to be used from OpenAI's available models.
 ### Example
 
 ```sh
-python3 ./mergekit/scripts/llm_evo.py --strategy pool --wandb --wandb-project mergekit-evolve --wandb-entity arcee-ai --storage-path /path/to/mergekit-evolve/ ./config.yml
+python3 ./mergekit/scripts/evolve_llm.py --strategy pool --wandb --wandb-project mergekit-evolve --wandb-entity arcee-ai --storage-path /path/to/mergekit-evolve/ ./config.yml
 ```
 
 ## Acknowledgement
