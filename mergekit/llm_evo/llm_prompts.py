@@ -8,7 +8,7 @@ Ensure that the "next_mean_genome" generation aligns with the "thought" analysis
 Here is an example:
 {
   "thought": "Among the top-performing genomes, Genomes 1, 7, and 9 showed high fitness when gene values were higher in the 2nd and 3rd models, so I slightly increased all gene values in Model 1.",
-  "mean_genome": [[[[345]], [[15]], [[838]]], ...]
+  "mean_genome": [[[[45]], [[15]], [[38]]], ...]
 }
 
 Define mean genome with the dimensions (n_layer_groups, n_models, n_param_sets, n_params) as specified. In this structure:

@@ -321,7 +321,7 @@ class LLMEvolutionStrategy:
         self.generation = 0
         self.top_k = top_k
         
-    def mutate(self, pre_gen: np.array, fit_scores: list[float], max_retries: int = 3, sigma_low:float=0.05, sigma_high:float=0.2) -> np.array:
+    def mutate(self, pre_gen: np.array, fit_scores: List[float], max_retries: int = 3, sigma_low:float=0.05, sigma_high:float=0.2) -> np.array:
         self.generation += 1
         fitness_improved = max(fit_scores) > self.prev_best_cost
         
