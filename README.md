@@ -236,24 +236,16 @@ Model 2: akjindal53244/Llama-3.1-Storm-8B
 | [LLMEvoLLaMA](https://huggingface.co/fiveflow/LLMEvoLLaMA-3.1-8B-v0.1)     | 0.57                  | 0.50                 | **0.71**                         |
 
 ## Installation
-Install mergekit with the evolve (and optionally vllm) features:
+Install LLM-Evo-Merge with the evolve (and optionally vllm) features:
 ```
 git clone https://github.com/kwon13/LLM-Evo-Merge.git
-cd mergekit
+cd LLM-Evo-Merge
 pip install -e .[evolve,vllm]
-```
-
-If you had a perfectly good pytorch environment going and installing an older version of vLLM downgraded it and broke flash attention, run the following commands to fix it:
-
-```sh
-pip uninstall flash-attn
-pip cache purge
-pip install flash-attn
 ```
 
 ## Configuration
 
-`mergekit-evolve` takes in a YAML configuration file that defines how the merge is parameterized and what metrics to optimize. The general syntax is as follows:
+LLM-Evo-Merge takes in a YAML configuration file that defines how the merge is parameterized and what metrics to optimize. The general syntax is as follows:
 
 ```yml
 genome:
@@ -407,11 +399,11 @@ The name of the LLM model to be used from OpenAI's available models.
 ### Example
 
 ```sh
-python3 scripts/llm_evo.py --strategy pool --wandb --wandb-project mergekit-evolve --wandb-entity arcee-ai --storage-path /path/to/mergekit-evolve/ ./config.yml
+python3 ./mergekit/scripts/llm_evo.py --strategy pool --wandb --wandb-project mergekit-evolve --wandb-entity arcee-ai --storage-path /path/to/mergekit-evolve/ ./config.yml
 ```
 
 ## Acknowledgement
-I would like to express my gratitude to Sakana AI for inspiring me with their intriguing ideas, and to Meta, NCSOFT, and Ashvini Kumar Jindal for their exceptional work in developing the impressive Llama model. My code was built upon the Mergekit repository, and I sincerely thank the developers for their efforts throughout the process.
+I would like to express my gratitude to Sakana AI for inspiring me with their intriguing ideas. My code was built upon the Mergekit repository, and I sincerely thank the developers for their efforts throughout the process.
 
 
 ## Citation
@@ -432,5 +424,15 @@ I would like to express my gratitude to Sakana AI for inspiring me with their in
   archivePrefix={arXiv},
   primaryClass={cs.AI},
   url={https://arxiv.org/abs/2402.18381}, 
+}
+
+@misc{akiba2024evolutionaryoptimizationmodelmerging,
+      title={Evolutionary Optimization of Model Merging Recipes}, 
+      author={Takuya Akiba and Makoto Shing and Yujin Tang and Qi Sun and David Ha},
+      year={2024},
+      eprint={2403.13187},
+      archivePrefix={arXiv},
+      primaryClass={cs.NE},
+      url={https://arxiv.org/abs/2403.13187}, 
 }
 ```
