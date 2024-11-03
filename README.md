@@ -406,7 +406,7 @@ python3 ./mergekit/scripts/evolve_llm.py --strategy pool --wandb --wandb-project
 I would like to express my gratitude to Sakana AI for inspiring me with their intriguing ideas. My code was built upon the Mergekit repository, and I sincerely thank the developers for their efforts throughout the process.
 
 
-## Citation
+## References
 
 ```bibtex
 @article{goddard2024arcee,
